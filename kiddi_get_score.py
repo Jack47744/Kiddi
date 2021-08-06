@@ -16,10 +16,10 @@ import matplotlib.pyplot as plt
 from pandas.api.types import is_numeric_dtype
 from scipy.stats import zscore
 import pickle
-IS_RAW_PATH = '/Users/metis_sotangkur/Desktop/Kiddi_ds/Data/is_raw_idd.xlsx'
-IWP_PATH = '/Users/metis_sotangkur/Desktop/Kiddi_ds/Data/iwp_raw_idd.xlsx'
-IWES_PATH = '/Users/metis_sotangkur/Desktop/Kiddi_ds/Data/iwes_raw_idd.xlsx'
-CENSUS_PATH = '/Users/metis_sotangkur/Desktop/Kiddi_ds/Data/census_idd.xlsx'
+IS_RAW_PATH = 'Data/is_raw_idd.xlsx'
+IWP_PATH = 'Data/iwp_raw_idd.xlsx'
+IWES_PATH = 'Data/iwes_raw_idd.xlsx'
+CENSUS_PATH = 'Data/census_idd.xlsx'
 kiddi = Kiddi(IS_RAW_PATH, IWP_PATH, IWES_PATH, CENSUS_PATH)
 
 model_path = 'random_forest.sav'
