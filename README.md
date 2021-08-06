@@ -1,5 +1,5 @@
 
-There are few step that you must do before running the code.
+There are few steps that you must do before running the code.
 1. pip3 install numpy
 2. pip3 install pandas
 3. pip3 install -U scikit-learn
@@ -7,7 +7,7 @@ There are few step that you must do before running the code.
 5. pip3 install matplotlib
 6. pip3 install openpyxl
 
-To get patients score please run iddi_get_score.py
+To get patients score please run kiddi_get_score.py
 
 Then you can change the parameter in kiddi_get_score.py
 Args are model_path, feature_list, start_predict_date, end_predict_date
