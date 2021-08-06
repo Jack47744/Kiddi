@@ -488,7 +488,7 @@ class Kiddi():
         filename = model + '.sav'
         print(f'save model to {filename}')
         pickle.dump(model, open(filename, 'wb'))
-        return clf, model_path
+        return clf, filename
 
     # def prep_table_final_score(self, st_data_dt, end_data_dt, IS_RAW_PATH, IWP_PATH, IWES_PATH, CENSUS_PATH):
     #     df = pd.read_excel(IS_RAW_PATH)
