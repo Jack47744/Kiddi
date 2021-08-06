@@ -17,14 +17,14 @@ from scipy.stats import zscore
 import pickle
 class Kiddi():
     def __init__(self, IS_RAW_PATH, IWP_PATH, IWES_PATH, CENSUS_PATH):
-        # self.df = pd.read_excel(IS_RAW_PATH)
-        # self.df_iwp = pd.read_excel(IWP_PATH)[['idd','peritonitisdate']]
-        # self.df_iwes = pd.read_excel(IWES_PATH)[['idd','exitsitedate']]
-        # self.df_census = pd.read_excel(CENSUS_PATH)[['idd','PatientAge','male','Diabetes','PDVintage','MQexist']]
-        self.df = colab_df
-        self.df_iwp = colab_df_iwp[['idd','peritonitisdate']]
-        self.df_iwes = colab_df_iwes[['idd','exitsitedate']]
-        self.df_census = colab_df_census[['idd','PatientAge','male','Diabetes','PDVintage','MQexist']]
+        self.df = pd.read_excel(IS_RAW_PATH)
+        self.df_iwp = pd.read_excel(IWP_PATH)[['idd','peritonitisdate']]
+        self.df_iwes = pd.read_excel(IWES_PATH)[['idd','exitsitedate']]
+        self.df_census = pd.read_excel(CENSUS_PATH)[['idd','PatientAge','male','Diabetes','PDVintage','MQexist']]
+        # self.df = colab_df
+        # self.df_iwp = colab_df_iwp[['idd','peritonitisdate']]
+        # self.df_iwes = colab_df_iwes[['idd','exitsitedate']]
+        # self.df_census = colab_df_census[['idd','PatientAge','male','Diabetes','PDVintage','MQexist']]
         self.target_df = None
         self.population = None
         self.is_raw_partition = dict()
@@ -484,30 +484,35 @@ class Kiddi():
         self.plot_lift_chart(test_result, y_test.to_numpy(), 20, 0)
         print(f'bin of score from non-infected patients')
         print('')
-        model_path = pickle.dumps(clf)
-        print(f'model path : {model_path}')
+        # save model
+        filename = model + '.sav'
+        print(f'save model to {filename}')
+        pickle.dump(model, open(filename, 'wb'))
         return clf, model_path
 
-    def prep_table_final_score(self, st_data_dt, end_data_dt, IS_RAW_PATH, IWP_PATH, IWES_PATH, CENSUS_PATH):
-        df = pd.read_excel(IS_RAW_PATH)
-        df_iwp = pd.read_excel(IWP_PATH)[['idd','peritonitisdate']]
-        df_iwes = pd.read_excel(IWES_PATH)[['idd','exitsitedate']]
-        df_census = pd.read_excel(CENSUS_PATH)[['idd','PatientAge','male','Diabetes','PDVintage','MQexist']]
+    # def prep_table_final_score(self, st_data_dt, end_data_dt, IS_RAW_PATH, IWP_PATH, IWES_PATH, CENSUS_PATH):
+    #     df = pd.read_excel(IS_RAW_PATH)
+    #     df_iwp = pd.read_excel(IWP_PATH)[['idd','peritonitisdate']]
+    #     df_iwes = pd.read_excel(IWES_PATH)[['idd','exitsitedate']]
+    #     df_census = pd.read_excel(CENSUS_PATH)[['idd','PatientAge','male','Diabetes','PDVintage','MQexist']]
 
 
     def get_prob(self, model_path, feature_col, st_data_dt, end_data_dt):
         # function
         self.clean_data()
         self.gen_population()
+        self.gen_target()
         self.partition_is_raw()
         self.feature_engineer_ts()
         self.feature_engineer_segment()
-        df = self.get_all_data().reset_index(drop=True)
-        df = df[(df['ft_data_dt'] >= st_data_dt) & (df['ft_data_dt'] <= end_data_dt)]
+        df = self.get_all_data()
+        df = df[(df['ft_data_dt'] >= st_data_dt) & (df['ft_data_dt'] <= end_data_dt)].reset_index(drop=True)
         X_data = df[feature_col]
+
         # get model
-        clf = pickle.loads(model_path)
+        clf = pickle.load(open(model_path, 'rb'))
         test_result = clf.predict_proba(X_data)[:,1]
+
         df['score'] = pd.Series(test_result)
         return df[['idd', 'ft_data_dt', 'score']]
 
@@ -708,5 +713,3 @@ class Kiddi():
     
     def set_feature_columns(self, feature_columns):
         self.feature_columns = feature_columns
-
-
