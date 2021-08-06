@@ -21,7 +21,8 @@ IWP_PATH = '/Users/metis_sotangkur/Desktop/Kiddi_ds/Data/iwp_raw_idd.xlsx'
 IWES_PATH = '/Users/metis_sotangkur/Desktop/Kiddi_ds/Data/iwes_raw_idd.xlsx'
 CENSUS_PATH = '/Users/metis_sotangkur/Desktop/Kiddi_ds/Data/census_idd.xlsx'
 kiddi = Kiddi(IS_RAW_PATH, IWP_PATH, IWES_PATH, CENSUS_PATH)
-model_path = ''
+
+model_path = 'random_forest.sav'
 feature_col = ['qLymphVal_min_12mth', 'qNeutrophilsVal_max_9mth',
        'BactInfec_avg_12mth', 'qNeutrophilsVal_max_12mth',
        'qLymphVal_min_9mth', 'zscore_age_BactInfec_sum_12mth',
@@ -83,3 +84,4 @@ feature_col = ['qLymphVal_min_12mth', 'qNeutrophilsVal_max_9mth',
 st_data_dt = np.datetime64(date(2017, 6, 1))
 end_data_dt = np.datetime64(date(2017, 6, 30))
 score = kiddi.get_prob(model_path, feature_col, st_data_dt, end_data_dt)
+print(score)

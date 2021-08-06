@@ -487,7 +487,7 @@ class Kiddi():
         # save model
         filename = model + '.sav'
         print(f'save model to {filename}')
-        pickle.dump(model, open(filename, 'wb'))
+        pickle.dump(clf, open(filename, 'wb'))
         return clf, filename
 
     # def prep_table_final_score(self, st_data_dt, end_data_dt, IS_RAW_PATH, IWP_PATH, IWES_PATH, CENSUS_PATH):
@@ -497,7 +497,7 @@ class Kiddi():
     #     df_census = pd.read_excel(CENSUS_PATH)[['idd','PatientAge','male','Diabetes','PDVintage','MQexist']]
 
 
-    def get_prob(self, model_path, feature_col, st_data_dt, end_data_dt):
+    def get_prob(self, filename, feature_col, st_data_dt, end_data_dt):
         # function
         self.clean_data()
         self.gen_population()
@@ -510,9 +510,10 @@ class Kiddi():
         X_data = df[feature_col]
 
         # get model
-        clf = pickle.load(open(model_path, 'rb'))
+        clf = pickle.load(open(filename, 'rb'))
+        print(clf)
         test_result = clf.predict_proba(X_data)[:,1]
-
+        
         df['score'] = pd.Series(test_result)
         return df[['idd', 'ft_data_dt', 'score']]
 
