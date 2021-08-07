@@ -182,6 +182,8 @@ class Kiddi():
         """
         gen target from iwp union with iwes
         assume that the patients will be infected until current date
+        if pateint get infected on 2016-05-02 this will conclude that the patient get infected 
+        2016-05-31, 2016-06-30, 2016-07-31, ... until the latest day in the is_raw_idd file
         """
         df_iwp = self.get_df_iwp()
         df_iwes = self.get_df_iwes()
@@ -248,6 +250,7 @@ class Kiddi():
     def feature_engineer_ts(self, month=12):
         """
         Time series features
+        the time will be 1, 3, 6, 9, 12 in the past from current ft_data_dt
         """
         st_data_dt = self.get_st_data_dt()
         end_data_dt = self.get_end_data_dt()
@@ -349,6 +352,13 @@ class Kiddi():
         
 
     def feature_engineer_segment(self):
+        """
+        Feature engineer in each patient segment
+        For example if two patients has the same value of sodiumVal_min_3mth
+        The first one age is in 30-40
+        The latter's age is in 60-70
+        z_score of sodiumVal_min_3mth of these two patients will be differed
+        """
         df = self.get_all_data()
 
         # join with census
@@ -372,7 +382,9 @@ class Kiddi():
         target_df = target_df.rename(columns = {'target' : 'lag_target'})
         target_df['lag_target'] = target_df['lag_target'].replace(np.nan, 0)
         df = df.merge(target_df, on = ['idd', 'ft_data_dt'], how='left')
-        
+        """
+        age segment will be calculated by //10
+        """
         def impute_age(age):
             return age//10
         df['age_group'] = df['PatientAge'].apply(lambda x:impute_age(x))
@@ -395,6 +407,9 @@ class Kiddi():
         self.set_all_data(df)
     
     def join_target(self):
+        """
+        join with the target dataframe
+        """
         df = self.get_all_data()
         target_df = self.get_target_df().copy(deep=True)
         target_df['ft_data_dt'] = target_df['ft_data_dt'].astype('datetime64[M]') - pd.DateOffset(months=2) + MonthEnd(1)
@@ -404,7 +419,9 @@ class Kiddi():
         self.set_prep_data(df)
 
     def prep_data_fn(self, st_train_dt, end_train_dt, st_val_dt, end_val_dt, st_test_dt, end_test_dt):
-        
+        """
+        prep data for train validation and test
+        """
         df = self.get_prep_data()
         train = df[(df['ft_data_dt'] >= st_train_dt) & (df['ft_data_dt'] <= end_train_dt)]
         val = df[(df['ft_data_dt'] >= st_val_dt) & (df['ft_data_dt'] <= end_val_dt)].sample(frac=0.4, random_state=2021)
@@ -432,11 +449,17 @@ class Kiddi():
         self.set_test_y(test_y)
 
     def get_all_columns(self):
+        """
+        return columns in prep_data
+        """
         df = self.get_prep_data()
         col = [c for c in df.columns if c not in ['target', 'idd', 'ft_data_dt']]
         return col
 
     def train_model(self, model, hyperparameter_dict, feature_col):
+        """
+        train model with given columns, parameters and model
+        """
         if model == 'random_forest':
             clf = RandomForestClassifier(max_depth=hyperparameter_dict['depth'], n_estimators = hyperparameter_dict['tree_num'], random_state = 2021)
         elif model == 'XGBoost':
@@ -471,7 +494,9 @@ class Kiddi():
         test_result = test_result[:,1]
         fpr, tpr, thresholds = metrics.roc_curve(y_test, test_result)
         print(f'Test auc : {metrics.auc(fpr, tpr)}')
-
+        """
+        plot aoc curve and lift chart
+        """
         self.plot_roc_graph(clf, feature_col)
         self.set_model(clf)
         score_list = pd.Series(test_result, name='score').to_frame().reset_index(drop=True)

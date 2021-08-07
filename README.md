@@ -1,4 +1,5 @@
 
+For backend developers
 There are few steps that you must do before running the code.
 1. pip3 install numpy
 2. pip3 install pandas
@@ -15,3 +16,7 @@ Return dataframe consists of 3 columns which are 'idd', 'ft_data_dt', 'score'
 
 You may disable plot function in train_model() function
 Example is in colab https://colab.research.google.com/drive/1x-liLNJJJWmTReaqjmqE68vgEVjngnFw?usp=sharing
+
+For data scientist
+You can obseve kiddi_ml.py as a main class for Kiddi.
+Model training is coded in kiddi_train_model.py
